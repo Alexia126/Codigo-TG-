@@ -1,0 +1,117 @@
+############ Script final desarrollo pasantía#######
+
+###1 Procedimientos exploratorios generelaes (Descriptivos)
+
+
+###2 Cuantificación de la DT dada la CV y ZA 
+TXY<-read.csv("Matriz INEXT DT XY (CSV).csv",header = T, row.names =NULL) [,-1]
+
+HTXY<-iNEXT(TXY, q= c(0,1,2) , datatype="abundance", size=NULL, endpoint=NULL, knots=40, se=TRUE, conf=0.95, nboot=50)
+
+HTXYG<- ggiNEXT(HTXY, type=1, facet.var="order", color.var="site") +   theme_bw()+ theme(legend.position="bottom") + ggtitle("Hill por CV y AL")
+HTXYG
+
+HTXYA<- ggiNEXT(HTXY, type=2, facet.var="order", color.var="site") +    theme_bw()+ theme(legend.position="bottom") + ggtitle("Curva de acumulación") 
+HTXYA ### Acumulación
+
+HTXYC<-ggiNEXT(HTXY, type=3, facet.var="order", color.var="site")  +    theme_bw()+ theme(legend.position="bottom") + ggtitle("Curva basada en la cobertura 95%")  
+HTXYC ### Cobertura
+ 
+HTXYR<-HTXY$AsyEst
+RTHXT<-write.table(x = HTXYR, file = "Indices HDF.csv", sep = ",", 
+                   row.names = TRUE, col.names = TRUE)
+
+
+
+###3 Cuantificación de la DF dada la CV y ZA
+FXY<-read.csv("Matriz INEXT DF XY (CSV).csv",header = T, row.names =NULL) [,-1]
+
+HFXY<-iNEXT(FXY, q= c(0,1,2) , datatype="abundance", size=NULL, endpoint=NULL, knots=40, se=TRUE, conf=0.95, nboot=50)
+
+HFXYG<- ggiNEXT(HFXY, type=1, facet.var="order", color.var="site") +   theme_bw()+ theme(legend.position="bottom") + ggtitle("Hill por CV y AL")
+HFXYG
+
+HFXYA<- ggiNEXT(HFXY, type=2, facet.var="order", color.var="site") +    theme_bw()+ theme(legend.position="bottom") + ggtitle("Curva de acumulación") 
+
+HFXYA ### Acumulación
+
+HFXYC<-ggiNEXT(HFXY, type=3, facet.var="order", color.var="site")  +    theme_bw()+ theme(legend.position="bottom") + ggtitle("Curva basada en la cobertura 95%")  
+HFXYC ### Cobertura
+
+HFXYR<-HFXY$AsyEst
+RFHXT<-write.table(x = HFXYR, file = "Indices HDT.csv", sep = ",", 
+            row.names = TRUE, col.names = TRUE)
+
+
+###4 Estadísticos para selección de prueba comparación por grupos
+
+##### Datos para DT
+IDT<-read.csv("Valores Índices H DT (CSV).csv")
+head(IDT)
+View(IDT)
+levels(IDT$Cobertura.vegetal)
+levels(IDT$Zona.altitudinal)
+as.factor(IDT$Cobertura.vegetal)
+as.factor(IDT$Zona.altitudinal)
+
+##### Datos para DF
+IDF<-read.csv("Valores Índices H DF (CSV).csv")
+head(IDF)
+View(IDF)
+levels(IDF$Cobertura.vegetal)
+levels(IDF$Zona.altitudinal)
+as.factor(IDF$Cobertura.vegetal)
+as.factor(IDF$Zona.altitudinal)
+
+### Resumen gráfico
+
+boxplot(IDF$Riqueza~IDF$Cobertura.vegetal)
+boxplot(IDF$Riqueza~IDF$Zona.altitudinal)
+
+boxplot(IDF$Hill.Shannon~IDF$Cobertura.vegetal)
+boxplot(IDF$Hill.Shannon~ID$Zona.altitudinal)
+
+boxplot(IDF$Hill.Simpson~IDF$Cobertura.vegetal)
+boxplot(IDF$Hill.Simpson~IDF$Zona.altitudinal)
+
+              #########################
+boxplot(IDT$Riqueza~IDT$Cobertura.vegetal)
+boxplot(IDT$Riqueza~IDT$Zona.altitudinal)
+
+boxplot(IDT$Hill.Shannon~IDT$Cobertura.vegetal)
+boxplot(IDT$Hill.Shannon~IDT$Zona.altitudinal)
+
+boxplot(IDT$Hill.Simpson~IDT$Cobertura.vegetal)
+boxplot(IDT$Hill.Simpson~IDT$Zona.altitudinal)
+
+plot(density(IDT$Riqueza))
+plot(density(IDT$Hill.Simpson))
+
+### 4A Normalidad 
+
+### N<50 = Shapiro
+
+shapiro.test(x = IDT$Riqueza)
+shapiro.test(x = IDT$Hill.Shannon)
+shapiro.test(x = IDT$Hill.Simpson)
+
+shapiro.test(x = IDF$Riqueza)
+shapiro.test(x = IDF$Hill.Shannon)
+shapiro.test(x = IDF$Hill.Simpson)
+####### No normal
+
+
+### 4B Homocedasticidad 
+
+leveneTest(IDT$Riqueza~IDT$Cobertura.vegetal)
+leveneTest(IDT$Riqueza~IDT$Zona.altitudinal)
+
+leveneTest(IDT$Hill.Shannon~IDT$Cobertura.vegetal)
+leveneTest(IDT$Hill.Shannon~IDT$Zona.altitudinal)
+
+leveneTest(IDT$Hill.Simpson~IDT$Cobertura.vegetal)
+leveneTest(IDT$Hill.Simpson~IDT$Zona.altitudinal)
+
+######## No homocedastico
+
+###5 Prueba comparación de medianas por grupos = Kruskal-Wallis
