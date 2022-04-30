@@ -242,24 +242,30 @@ cor.test(y = IDF$Hill.Simpson,x = IDT$Hill.Simpson,
 
 ### Regresión lineal y representación gráfica 
 
-R0<- lm(IDF$Riqueza~IDT$Riqueza)
+R0<- lm(IDF$Riqueza_Funcional~IDT$Riqueza_Taxonómica)
 summary(R0) ### No linealidad modelo no muy bien ajustado  
-R0G<-ggplot(IDT, aes(x=IDT$Riqueza, y=IDF$Riqueza)) +
+R0G<-ggplot(IDT, aes(x=Riqueza_Taxonómica , y=IDF$Riqueza_Funcional)) +
   geom_point(shape=1) +   
-  geom_smooth(method=lm)
+  geom_smooth(method=lm) +
+  ggtitle ("Regresión lineal entre RF y RT") +
+  labs(x = "Riqueza taxonómica (RT)",y = "Riqueza funcional (RF)")
 R0G
 
 HS1<- lm(IDF$Hill.Shannon~IDT$Hill.Shannon)
 HS1G<-ggplot(IDT, aes(x=IDT$Hill.Shannon, y=IDF$Hill.Shannon)) +
   geom_point(shape=1) +    
-  geom_smooth(method=lm)
+  geom_smooth(method=lm)+
+  ggtitle ("Regresión lineal entre Hill-Shannon funcional y taxonómico") +
+  labs(x = "Hill-Shannon taxonómico",y = "Hill-Shannon funcional")
 HS1G
 summary(HS1)### No linealidad modelo no muy bien ajustado  
 
 HS2<- lm(IDF$Hill.Simpson~IDT$Hill.Simpson)
 HS2G<-ggplot(IDT, aes(x=IDT$Hill.Simpson, y=IDF$Hill.Simpson)) +
   geom_point(shape=1) +    
-  geom_smooth(method=lm)
+  geom_smooth(method=lm)+
+  ggtitle ("Regresión lineal entre Hill-Simpson funcional y taxonómico") +
+  labs(x = "Hill-Simpson taxonómico",y = "Hill-Simpson funcional")
 HS2G
 summary(HS2) ### No linealidad modelo mejor ajustado
 
@@ -273,7 +279,7 @@ AGDT<-read.csv("Matriz abundancia DTXY (CSV).csv")
 
 ### Por cobertura vegetal 
 
-ADTCV<-ggplot(AGDT, aes(fill=AGDT$Cobertura.vegetal, y=AGDT$Abundancia, x=AGDT$Morfoespecie)) +
+ADTCV<-ggplot(AGDT, aes(fill=AGDT$Cobertura.vegetal, y=Abundancia, x=Morfoespecie)) +
   geom_bar(stat="identity") +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0))+ ylab("Abundancia (ind/especie)") + labs(fill="Cobertura vegetal")
 
@@ -281,7 +287,7 @@ ADTCV
 
 ### Por zona altitudinal
 
-ADTZA<-ggplot(AGDT, aes(fill=AGDT$Zona.altitudinal, y=AGDT$Abundancia, x=AGDT$Morfoespecie)) +
+ADTZA<-ggplot(AGDT, aes(fill=Zona.altitudinal, y=Abundancia, x=Morfoespecie)) +
   geom_bar(stat="identity") +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0))+ ylab("Abundancia (ind/especie)") + labs(fill="Zona altitudinal")
 
@@ -294,7 +300,7 @@ AGDF<-read.csv("Matriz abundancia DFXY (CSV).csv")
 
 ### Por cobertura vegetal 
 
-ADFCV<-ggplot(AGDF, aes(fill=AGDF$Cobertura.vegetal, y=AGDF$Abundancia, x=AGDF$Rasgos)) +
+ADFCV<-ggplot(AGDF, aes(fill=Cobertura.vegetal, y=Abundancia, x=Rasgos)) +
   geom_bar(stat="identity") +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0))+ ylab("Abundancia (ind/rasgo)") + labs(fill="Cobertura vegetal")
 
@@ -302,7 +308,7 @@ ADFCV
 
 ### Por zona altitudinal
 
-ADFZA<-ggplot(AGDF, aes(fill=AGDF$Zona.altitudinal, y=AGDF$Abundancia, x=AGDF$Rasgos)) +
+ADFZA<-ggplot(AGDF, aes(fill=Zona.altitudinal, y=Abundancia, x=Rasgos)) +
   geom_bar(stat="identity") +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0))+ ylab("Abundancia (ind/rasgo)") + labs(fill="Zona altitudinal")
 
