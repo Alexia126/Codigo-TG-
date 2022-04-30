@@ -114,4 +114,142 @@ leveneTest(IDT$Hill.Simpson~IDT$Zona.altitudinal)
 
 ######## No homocedastico
 
-###5 Prueba comparación de medianas por grupos = Kruskal-Wallis
+###5 Prueba comparación de medianas por grupos
+
+### 5A Kruskal-Wallis
+
+###  Riqueza 
+
+KWTR0CV<-kruskal.test(IDT$Riqueza ~IDT$Cobertura.vegetal)
+KWTR0CV ##### Si diferencia p-value = 0.2251 
+KWTR0ZA<-kruskal.test(IDT$Riqueza ~IDT$Zona.altitudinal)
+KWTR0ZA #### No diferencia p-value = 0.002471
+aov(Riqueza ~ IDT$Cobertura.vegetal*IDT$Zona.altitudinal, data = IDT)
+
+
+KWFR0CV<-kruskal.test(IDF$Riqueza ~IDF$Cobertura.vegetal)
+KWFR0CV ##### Si diferencia p-value = 0.09049
+KWFR0ZA<-kruskal.test(IDF$Riqueza ~IDF$Zona.altitudinal)
+KWFR0ZA #### Si diferencia p-value = 0.4487
+
+### Hill-Shannon
+
+KWTHS1CV<-kruskal.test(IDT$Hill.Shannon ~IDT$Cobertura.vegetal)
+KWTHS1CV ##### Si diferencia p-value = 0.1208
+KWTHS1ZA<-kruskal.test(IDT$Hill.Shannon ~IDT$Zona.altitudinal)
+KWTHS1ZA #### Si diferencia p-value = 0.04099
+
+KWFHS1CV<-kruskal.test(IDF$Hill.Shannon ~IDF$Cobertura.vegetal)
+KWFHS1CV ##### Si diferencia p-value = 0.3543
+KWFHS1ZA<-kruskal.test(IDF$Hill.Shannon ~IDF$Zona.altitudinal)
+KWFHS1ZA #### Si diferencia p-value = 0.6928
+
+#### Hill-Simpson 
+
+KWTHS2CV<-kruskal.test(IDT$Hill.Simpson ~IDT$Cobertura.vegetal)
+KWTHS2CV ### No hay p-value = 0.05309
+KWTHS2ZA<-kruskal.test(IDT$Hill.Simpson ~IDT$Zona.altitudinal)
+KWTHS2ZA #### No hay p-value = 0.002842
+
+KWFHS2CV<-kruskal.test(IDF$Hill.Simpson ~IDF$Cobertura.vegetal)
+KWFHS2CV ### Si hay p-value = 0.33
+KWFHS2ZA<-kruskal.test(IDF$Hill.Simpson ~IDF$Zona.altitudinal)
+KWFHS2ZA #### Si hay  p-value = 0.5489
+
+########## Post-hoc 
+
+### Riqueza 
+
+### DT vs CV
+
+pairwise.wilcox.test(x = IDT$Riqueza, g = IDT$Cobertura.vegetal, p.adjust.method = "holm" ) ### Todos son diferentes 
+
+### DF vs CV y ZA
+
+pairwise.wilcox.test(x = IDF$Riqueza, g = IDF$Cobertura.vegetal, p.adjust.method = "holm" ) ### Todos son diferentes 
+
+pairwise.wilcox.test(x = IDF$Riqueza, g = IDF$Zona.altitudinal, p.adjust.method = "holm" ) ### Todos son diferentes 
+
+### HShannon 
+
+### DT vs CV y ZA
+
+pairwise.wilcox.test(x = IDT$Hill.Shannon, g = IDT$Cobertura.vegetal, p.adjust.method = "holm" ) ### Todos son diferentes 
+
+pairwise.wilcox.test(x = IDT$Hill.Shannon, g = IDT$Zona.altitudinal, p.adjust.method = "holm" ) ### Tropical y andina no son diferentes
+
+### DF vs CV y ZA
+
+pairwise.wilcox.test(x = IDF$Hill.Shannon, g = IDF$Cobertura.vegetal, p.adjust.method = "holm" ) ### Todos son diferentes 
+
+pairwise.wilcox.test(x = IDF$Hill.Shannon, g = IDF$Zona.altitudinal, p.adjust.method = "holm" ) ### Todos son diferentes 
+
+### HSimpson
+
+### DF vs CV y ZA
+
+pairwise.wilcox.test(x = IDF$Hill.Simpson, g = IDF$Zona.altitudinal, p.adjust.method = "holm" ) ### Todos son diferentes 
+
+pairwise.wilcox.test(x = IDF$Hill.Simpson, g = IDF$Cobertura.vegetal, p.adjust.method = "holm" ) ### Todos son diferentes 
+
+###6 Correlación entre índices 
+
+### 6A Ajuste a la linealidad 
+
+ggplot(IDT, aes(sample = IDT$Riqueza))+
+  stat_qq() + stat_qq_line() ### No lineal
+
+ggplot(IDT, aes(sample = IDT$Hill.Shannon))+
+  stat_qq() + stat_qq_line() ### No lineal
+
+ggplot(IDT, aes(sample = IDT$Hill.Simpson))+
+  stat_qq() + stat_qq_line() ### No lineal
+
+######
+
+ggplot(IDF, aes(sample = IDF$Riqueza))+
+  stat_qq() + stat_qq_line() ### Casi, outliers
+
+ggplot(IDF, aes(sample = IDF$Hill.Shannon))+
+  stat_qq() + stat_qq_line() ### Casi, outliers
+
+ggplot(IDF, aes(sample = IDF$Hill.Simpson))+
+  stat_qq() + stat_qq_line() ### Casi, outliers
+
+### 6B Pruebas
+
+### Correlación de rangos de Kendall y Coeficiente de Tau
+
+cor.test(y = IDF$Riqueza, x =IDT$Riqueza, 
+         method = "kendall")### No asociación ordinal p-value = 0.0002512,  tau = 0.3851543 
+
+cor.test(y = IDF$Hill.Shannon,x = IDT$Hill.Shannon, 
+         method = "kendall")### No asociación ordinal p-value = 0.0005259,      tau = 0.3617794
+
+cor.test(y = IDF$Hill.Simpson,x = IDT$Hill.Simpson, 
+         method = "kendall")### Si hay asociación ordinal p-value = 0.009029, tau = 0.2747935
+
+### Correlación producto momento de Sperman / Coeficiente de Rho
+
+cor.test(y = IDF$Riqueza, x =IDT$Riqueza, 
+         method = "spearman")### No asociación ordinal p-value = 5.795e-05, rho =0.5624266
+
+cor.test(y = IDF$Hill.Shannon,x = IDT$Hill.Shannon, 
+         method = "spearman")### No asociación ordinal p-value = 0.000195, rho =0.5277421
+
+cor.test(y = IDF$Hill.Simpson,x = IDT$Hill.Simpson, 
+         method = "spearman")### Si hay asociación ordinal p-value = 0.02734, rho = 0.3289843
+
+### Regresión lineal y representación gráfica 
+
+R0<- lm(IDF$Riqueza~IDT$Riqueza)
+scatter.smooth(x=IDT$Riqueza, y=IDF$Riqueza, main="Riqueza")
+summary(R0) ### No linealidad modelo no muy bien ajustado  
+
+HS1<- lm(IDF$Hill.Shannon~IDT$Hill.Shannon)
+scatter.smooth(x=IDT$Hill.Shannon, y=IDF$Hill.Shannon, main="Hill-Shannon")
+summary(HS1)### No linealidad modelo no muy bien ajustado  
+
+HS2<- lm(IDF$Hill.Simpson~IDT$Hill.Simpson)
+scatter.smooth(x=IDT$Hill.Simpson, y=IDF$Hill.Simpson, main="Hill-Simpson")
+summary(HS2) ### No linealidad modelo mejor ajustado
