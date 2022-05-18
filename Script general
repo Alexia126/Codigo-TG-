@@ -124,13 +124,12 @@ KWTR0CV<-kruskal.test(IDT$Riqueza ~IDT$Cobertura.vegetal)
 KWTR0CV ##### Si diferencia p-value = 0.2251 
 KWTR0ZA<-kruskal.test(IDT$Riqueza ~IDT$Zona.altitudinal)
 KWTR0ZA #### No diferencia p-value = 0.002471
-aov(Riqueza ~ IDT$Cobertura.vegetal*IDT$Zona.altitudinal, data = IDT)
-
 
 KWFR0CV<-kruskal.test(IDF$Riqueza ~IDF$Cobertura.vegetal)
-KWFR0CV ##### Si diferencia p-value = 0.09049
+KWFR0CV 
+
 KWFR0ZA<-kruskal.test(IDF$Riqueza ~IDF$Zona.altitudinal)
-KWFR0ZA #### Si diferencia p-value = 0.4487
+KWFR0ZA 
 
 ### Hill-Shannon
 
@@ -160,9 +159,11 @@ KWFHS2ZA #### Si hay  p-value = 0.5489
 
 ### Riqueza 
 
-### DT vs CV
+### DT vs CV y ZA
 
-pairwise.wilcox.test(x = IDT$Riqueza, g = IDT$Cobertura.vegetal, p.adjust.method = "holm" ) ### Todos son diferentes 
+pairwise.wilcox.test(x = IDT$Riqueza, g = IDT$Cobertura.vegetal, p.adjust.method = "holm" ) 
+
+pairwise.wilcox.test(x = IDT$Riqueza, g = IDT$Zona.altitudinal, p.adjust.method = "holm" ) ### Todos son diferentes 
 
 ### DF vs CV y ZA
 
@@ -185,6 +186,12 @@ pairwise.wilcox.test(x = IDF$Hill.Shannon, g = IDF$Cobertura.vegetal, p.adjust.m
 pairwise.wilcox.test(x = IDF$Hill.Shannon, g = IDF$Zona.altitudinal, p.adjust.method = "holm" ) ### Todos son diferentes 
 
 ### HSimpson
+
+### DT vs CV y ZA
+
+pairwise.wilcox.test(x = IDT$Hill.Simpson, g = IDT$Zona.altitudinal, p.adjust.method = "holm" ) ### Todos son diferentes 
+
+pairwise.wilcox.test(x = IDT$Hill.Simpson, g = IDT$Cobertura.vegetal, p.adjust.method = "holm" ) ### Todos son diferentes 
 
 ### DF vs CV y ZA
 
@@ -313,3 +320,131 @@ ADFZA<-ggplot(AGDF, aes(fill=Zona.altitudinal, y=Abundancia, x=Rasgos)) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0))+ ylab("Abundancia (ind/rasgo)") + labs(fill="Zona altitudinal")
 
 ADFZA
+
+###8 Revisión de gráficas 
+
+### Curvas Hill general DT
+
+
+CAcuDTGen<-read.csv("INEXT CAcu DT Gen (CSV).csv",header = T, row.names =NULL) [,-1]
+View(CAcuDTGen) ### Matriz General
+
+GenDT<-iNEXT(CAcuDTGen, q= c(0,1,2) , datatype="abundance", size=NULL, endpoint=NULL, knots=40, se=TRUE, conf=0.95, nboot=50) ### Calculo
+
+GraAcuDTGenA<- ggiNEXT(GenDT, type=2, facet.var="order", color.var="site") +    theme_bw()+ theme(legend.position="bottom") + ggtitle("Curva de acumulación") 
+GraAcuDTGen ### Acumulación por abundancia
+
+GraAcuDTGenI<-ggiNEXT(GenDT, type=3, facet.var="order", color.var="site")  +    theme_bw()+ theme(legend.position="bottom") + ggtitle("Curva basada en la cobertura 95%")
+GraAcuDTGenI ### Calculo por método 95% cobertura
+
+GraGenHC<- ggiNEXT(GenDT, type=1, facet.var="order", color.var="site") +   theme_bw()+ theme(legend.position="bottom") + ggtitle("Muestreo general")
+
+GraGenHC ### Hill calculado completo 
+
+### Curvas Hill por ZA
+
+CAcuDTZA<-read.csv("INEXT CAcu DT ZA (CSV) .csv",header = T, row.names =NULL) [,-1] ### ZA
+
+ZADT<-iNEXT(CAcuDTZA, q= c(0,1,2) , datatype="abundance", size=NULL, endpoint=NULL, knots=40, se=TRUE, conf=0.95, nboot=50)
+
+GraAcuDTZAA<- ggiNEXT(ZADT, type=2, facet.var="order", color.var="site") +    theme_bw()+ theme(legend.position="bottom") + ggtitle("Curva de acumulación Abundancia") 
+GraAcuDTZAA ### Acumulación por abundancia
+
+GraAcuDTZAI<-ggiNEXT(ZADT, type=3, facet.var="order", color.var="site")  +    theme_bw()+ theme(legend.position="bottom") + ggtitle("Curva basada en la cobertura 95%")
+GraAcuDTZAI ### Calculo por método 95% cobertura metodo incidencias
+
+GraZAHC<- ggiNEXT(ZADT, type=1, facet.var="order", color.var="site") +   theme_bw()+ theme(legend.position="bottom") + ggtitle("Diversidad calculada por zona altitudinal") ### Hill calculado completo 
+GraZAHC
+
+#### Calculos por ZA dada la CV
+
+### Andina 
+
+DTZAAnd<-read.csv("INEXT Indices And DT (CSV).csv",header = T, row.names =NULL) [,-1] ### ZA Andina
+
+ZADTAnd<-iNEXT(DTZAAnd, q= c(0,1,2) , datatype="abundance", size=NULL, endpoint=NULL, knots=40, se=TRUE, conf=0.95, nboot=50)
+
+GraZAHCAnd<- ggiNEXT(ZADTAnd, type=1, facet.var="order", color.var="site") +   theme_bw()+ theme(legend.position="bottom") + ggtitle("Andina") ### Hill calculado completo 
+GraZAHCAnd
+
+### Sub Andina 
+
+DTZASAnd<-read.csv("INEXT Indices SAnd DT (CSV).csv",header = T, row.names =NULL) [,-1] ### ZA Sub Andina
+
+ZADTSAnd<-iNEXT(DTZASAnd, q= c(0,1,2) , datatype="abundance", size=NULL, endpoint=NULL, knots=40, se=TRUE, conf=0.95, nboot=50)
+
+GraZAHCSAnd<- ggiNEXT(ZADTSAnd, type=1, facet.var="order", color.var="site") +   theme_bw()+ theme(legend.position="bottom") + ggtitle("Sub Andina") ### Hill calculado completo 
+GraZAHCSAnd
+
+### Tropical 
+
+DTZATro<-read.csv("INEXT Indices Tro DT (CSV).csv",header = T, row.names =NULL) [,-1] ### ZA Tropical
+
+ZADTTro<-iNEXT(DTZATro, q= c(0,1,2) , datatype="abundance", size=NULL, endpoint=NULL, knots=40, se=TRUE, conf=0.95, nboot=50)
+
+GraZAHCTro<- ggiNEXT(ZADTTro, type=1, facet.var="order", color.var="site") +   theme_bw()+ theme(legend.position="bottom") + ggtitle("Tropical") ### Hill calculado completo 
+GraZAHCTro
+
+#### Curvas DF por ZA
+
+### Andina 
+
+DFZAAnd<-read.csv("INEXT And DF (CSV).csv",header = T, row.names =NULL) [,-1] ### ZA Andina
+
+ZADFAnd<-iNEXT(DFZAAnd, q= c(0,1,2) , datatype="abundance", size=NULL, endpoint=NULL, knots=40, se=TRUE, conf=0.95, nboot=50)
+
+GraZAHFCAnd<- ggiNEXT(ZADFAnd, type=1, facet.var="order", color.var="site") +   theme_bw()+ theme(legend.position="bottom") + ggtitle("Andina") ### Hill calculado completo 
+GraZAHFCAnd
+
+### Sub Andina 
+
+DFZASAnd<-read.csv("INEXT SAnd DF (CSV).csv",header = T, row.names =NULL) [,-1] ### ZA Sub Andina
+
+ZADFSAnd<-iNEXT(DFZASAnd, q= c(0,1,2) , datatype="abundance", size=NULL, endpoint=NULL, knots=40, se=TRUE, conf=0.95, nboot=50)
+
+GraZAHFCSAnd<- ggiNEXT(ZADFSAnd, type=1, facet.var="order", color.var="site") +   theme_bw()+ theme(legend.position="bottom") + ggtitle("Sub Andina") ### Hill calculado completo 
+GraZAHFCSAnd
+
+### Tropical 
+
+DFZATro<-read.csv("INEXT Tro DF (CSV).csv",header = T, row.names =NULL) [,-1] ### ZA Tropical
+
+ZADFTro<-iNEXT(DFZATro, q= c(0,1,2) , datatype="abundance", size=NULL, endpoint=NULL, knots=40, se=TRUE, conf=0.95, nboot=50)
+
+GraZAHFCTro<- ggiNEXT(ZADFTro, type=1, facet.var="order", color.var="site") +   theme_bw()+ theme(legend.position="bottom") + ggtitle("Tropical") ### Hill calculado completo 
+GraZAHFCTro
+
+#######8 Distribución DT Y DF
+
+### 8A Diagramas de Venn para distribución DT
+
+#### Para Zonas altitudinales
+
+MorfosZA<-list('Andina'=c("Apis mellifera", "Eulaema meriana cf","Halictini sp.3","Megachile sp.1","Meliponini sp.3", "Oxytrigona daemonica cf", "Plebeia sp.2", "Sphecidae sp.1", "Temnosoma sp.2"),'Sub Andina'=c("Apis mellifera","Augochlorini sp.1","Augochlorini sp.2", "Bombus atratus", "Bombus sp.1", "Euglossa sp. 2", "Halictini sp.2", "Melipona beecheii cf","Melipona nigrescens","Meliponini sp.1", "Meliponini sp.2", "Meliponini sp.3", "Meliponini sp.3", "Meliponini sp.4", "Meliponini sp.7","Meliponini sp.8", "Meliponini sp.9", "Oxytrigona sp.1", "Parapartamona sp.1", "Paratrigona eutaeniata cf", "Paratrigona ornaticeps cf", "Paratrigona rinconi cf", "Partamona peckolti cf","Plebeia sp.1", "Plebeia sp.2", "Plebeia sp.2", "Protandrena sp.1", "Scaptotrigona pectoralis cf", "Scaptotrigona sp.1","Scaptotrigona sp.2", "Trigona fulviventris","Xylocopa sp. 1"),'Tropical'= c("Agapostemon sp.1","Anthodioctes costaricensis cf", "Anthoporini sp. 1", "Anthoporini sp. 2", "Anthoporini sp. 3", "Augochlorini sp.3", "Cephalotrigona sp.1", "Cephalotrigona sp.2", "Cephalotrigona sp.3", "Cephalotrigona zexmeniae", "Eucerini sp. 1", "Euglossa sp. 1", "Euglossa sp. 2", "Euglossa sp. 3", "Eulaema meriana cf", "Halictini sp.1", "Melipona beecheii cf", "Melipona sp.1", "Meliponini sp.1", "Meliponini sp.2", "Meliponini sp.3","Meliponini sp.5", "Meliponini sp.6", "Neocorynura sp.1 cf", "Oxytrigona daemonica cf", "Oxytrigona mellicolor cf", "Oxytrigona sp.1", "Parapartamona sp.1", "Partamona musarum cf",  "Partamona peckolti cf",  "Partamona sp.1","Plebeia sp.1", "Plebeia sp.2", "Plebeia sp.3", "Scaptotrigona pectoralis cf", "Scaptotrigona sp.1", "Scaptotrigona sp.2", "Scaptotrigona suboscuripennis cf", "Scaura sp.1",  "Temnosoma sp.1", "Temnosoma sp.2", "Tetragona perangulata cf", "Tetragonisca angustula", "Trigona fulviventris ", "Trigona sp.1",  "Trigonisca sp.1"))
+
+ggvenn(MorfosZA)###### GGVenn
+
+ggVennDiagram(MorfosZA)######### ggVennDiagram 
+
+######## Para CV teniendo en cuenta la zona 
+
+##### Zona Andina 
+
+MorfosAnd<-list('Boscosa'=c("Apis mellifera", "Meliponini sp.3","Megachile sp.1"), 'Arbustiva'=c("Eulaema meriana cf","Temnosoma sp.2", "Sphecidae sp.1"),'Herbácea'=c("Oxytrigona daemonica cf","Plebeia sp.2", "Halictini sp.3" ) )
+
+ggvenn(MorfosAnd)
+ggVennDiagram(MorfosAnd)
+
+##### Zona Sub Andina 
+
+MorfosSAnd<-list('Boscosa'=c("Protandrena sp.1","Apis mellifera","Bombus atratus","Bombus sp.1","Euglossa sp. 2","Melipona beecheii cf","Melipona nigrescens ","Meliponini sp.2","Meliponini sp.3","Meliponini sp.4","Meliponini sp.7","Meliponini sp.8","Meliponini sp.9","Oxytrigona sp.1","Parapartamona sp.1","Paratrigona eutaeniata cf","Paratrigona ornaticeps cf","Paratrigona rinconi cf","Partamona peckolti cf","Plebeia sp.1","Plebeia sp.2","Scaptotrigona pectoralis cf","Scaptotrigona sp.1","Scaptotrigona sp.2","Trigona fulviventris ","Augochlorini sp.1","Augochlorini sp.2","Augochlorini sp.2","Cephalotrigona sp.3"), 'Arbustiva'=c("Cephalotrigona sp.3","Trigona fulviventris ","Xylocopa sp. 1"),'Herbácea'=c("Meliponini sp.1","Scaptotrigona pectoralis cf","Scaptotrigona sp.2","Trigona fulviventris ","Xylocopa sp. 1","Halictini sp.2"))
+
+ggvenn(MorfosSAnd)
+ggVennDiagram(MorfosSAnd)
+
+####### Zona Tropical
+
+MorfosTro<-list('Boscosa'=c("Anthoporini sp. 2","Eucerini sp. 1","Euglossa sp. 1","Euglossa sp. 2","Euglossa sp. 3","Eulaema meriana cf","Cephalotrigona sp.3","Cephalotrigona zexmeniae","Melipona beecheii cf","Melipona sp.1","Meliponini sp.1","Meliponini sp.2","Meliponini sp.3","Meliponini sp.5","Meliponini sp.6","Oxytrigona daemonica cf","Oxytrigona mellicolor cf","Oxytrigona sp.1","Parapartamona sp.1","Partamona musarum cf","Partamona peckolti cf","Plebeia sp.2","Scaptotrigona pectoralis cf","Scaptotrigona sp.1","Scaptotrigona sp.2","Scaura sp.1","Tetragona perangulata cf","Tetragonisca angustula","Trigona fulviventris ","Trigona sp.1","Trigonisca sp.1 ","Temnosoma sp.1","Temnosoma sp.2","Agapostemon sp.1","Anthodioctes costaricensis cf"), 'Arbustiva'=c("Anthoporini sp. 1","Euglossa sp. 1","Euglossa sp. 2","Eulaema meriana cf","Cephalotrigona sp.1","Cephalotrigona sp.2","Cephalotrigona sp.3","Melipona beecheii cf","Meliponini sp.1","Oxytrigona mellicolor cf","Partamona sp.1","Plebeia sp.1","Plebeia sp.2","Plebeia sp.3","Scaptotrigona pectoralis cf","Scaptotrigona sp.1","Scaptotrigona sp.2","Scaura sp.1","Trigona fulviventris ","Neocorynura sp.1 cf","Halictini sp.1","Halictini sp.1","Augochlorini sp.3"),'Herbácea'=c("Anthoporini sp. 3","Augochlorini sp.3","Euglossa sp. 3","Cephalotrigona zexmeniae","Melipona beecheii cf","Scaptotrigona sp.1","Scaptotrigona suboscuripennis cf","Trigona fulviventris ","Temnosoma sp.1"))
+
+ggvenn(MorfosTro)
+ggVennDiagram(MorfosTro)
