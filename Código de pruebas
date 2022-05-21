@@ -1,0 +1,106 @@
+############ Metodo 1
+
+####### VennDiagramR
+
+grid.newpage()
+draw.triple.venn(area1=8, area2=35, area3=65, 
+                 n12=2, n23=12, n13=3, n123=2, 
+                 category=c("Andina","Sub Andina","Tropical"),
+                 col="Black",fill=c("Blue","Green","Orange"),scaled= FALSE, euler.d = TRUE)
+
+######### Metodo 2
+######### GGVenn
+
+A <-list('Andina'=c("Eulaema meriana cf","Halictini sp.3","Megachile sp.1","Meliponini sp.3", "Oxytrigona daemonica cf", "Plebeia sp.2", "Sphecidae sp.1", "Temnosoma sp.2"),'Sub Andina'=c("Apis mellifera","Augochlorini sp.1","Augochlorini sp.2", "Bombus atratus", "Bombus sp.1", "Euglossa sp. 2", "Halictini sp.2", "Melipona beecheii cf","Melipona nigrescens","Meliponini sp.1", "Meliponini sp.2", "Meliponini sp.3", "Meliponini sp.3", "Meliponini sp.4", "Meliponini sp.7","Meliponini sp.8", "Meliponini sp.9", "Oxytrigona sp.1", "Parapartamona sp.1", "Paratrigona eutaeniata cf", "Paratrigona ornaticeps cf", "Paratrigona rinconi cf", "Partamona peckolti cf","Plebeia sp.1", "Plebeia sp.2", "Plebeia sp.2", "Protandrena sp.1", "Scaptotrigona pectoralis cf", "Scaptotrigona sp.1","Scaptotrigona sp.2", "Trigona fulviventris","Xylocopa sp. 1"),'Tropical'= c("Agapostemon sp.1","Anthodioctes costaricensis cf", "Anthoporini sp. 1", "Anthoporini sp. 2", "Anthoporini sp. 3", "Augochlorini sp.3", "Cephalotrigona sp.1", "Cephalotrigona sp.2", "Cephalotrigona sp.3", "Cephalotrigona zexmeniae", "Eucerini sp. 1", "Euglossa sp. 1", "Euglossa sp. 2", "Euglossa sp. 3", "Eulaema meriana cf", "Halictini sp.1", "Melipona beecheii cf", "Melipona sp.1", "Meliponini sp.1", "Meliponini sp.2", "Meliponini sp.3","Meliponini sp.5", "Meliponini sp.6", "Neocorynura sp.1 cf", "Oxytrigona daemonica cf", "Oxytrigona mellicolor cf", "Oxytrigona sp.1", "Parapartamona sp.1", "Partamona musarum cf",  "Partamona peckolti cf",  "Partamona sp.1","Plebeia sp.1", "Plebeia sp.2", "Plebeia sp.3", "Scaptotrigona pectoralis cf", "Scaptotrigona sp.1", "Scaptotrigona sp.2", "Scaptotrigona suboscuripennis cf", "Scaura sp.1",  "Temnosoma sp.1", "Temnosoma sp.2", "Tetragona perangulata cf", "Tetragonisca angustula", "Trigona fulviventris ", "Trigona sp.1",  "Trigonisca sp.1"))
+
+ggvenn(A)
+
+######### Metodo 3
+###GPLOTS
+
+venn(A)
+
+######## Metodo 4 
+#### GGVENNDIAGRAM
+
+ggVennDiagram(A)
+
+########## Correlaciones 2
+
+### Por riqueza taxonómica observada
+
+RTvsZA<- data.frame(Riqueza=c(65,8,35), Altitud=c(550,1700,2850))
+
+RTvsCV<- data.frame(Riqueza=c(18,26,64), Altura=c(1.25,3.5,32.5))
+
+cor.test(RTvsZA$Riqueza, RTvsZA$Altitud,  method="kendall") ### Kendall Generalmente usado para medir la asociación ordinal entre dos varaibles cuantitativas T = 1, p-value = 1  tau = -0.3333333  #Inversamente proporcional
+
+cor.test(RTvsCV$Riqueza, RTvsCV$Altura,  method="kendall") ### T = 3, p-value = 0.3333, tau =1  ### directamente proporcional
+
+cor.test(RTvsZA$Riqueza, RTvsZA$Altitud,  method="spearman") ### Kendall Generalmente usado para medir la asociación ordinal entre dos varaibles cuantitativas S = 6, p-value = 1  rho = -0.5 #Inversamente proporcional
+
+cor.test(RTvsCV$Riqueza, RTvsCV$Altura,  method="spearman") ### S=0, p-value = 0.3333, rho =1  ### directamente proporcional
+
+
+
+######### Modelo regresión
+RTyZA <- lm(RTvsZA$Riqueza~RTvsZA$Altitud)
+RTyZA
+summary(RTyZA)
+
+RTZA<-ggplot(RTvsZA, aes(x=RTvsZA$Altitud , y=RTvsZA$Riqueza)) +
+  geom_point(shape=1) +   
+  geom_smooth(method=lm) +
+  ggtitle ("Regresión lineal entre Riqueza y Altitud") +
+  labs(x = "Altitud (MSNM)",y = "Riqueza observada(N° morfoespecies)")
+RTZA ##### Mal debería ser inversamente proporcional
+
+RTyCV <- lm(RTvsCV$Riqueza~RTvsCV$Altura)
+RTyCV
+summary(RTyCV)
+
+RTCV<-ggplot(RTvsCV, aes(x=RTvsCV$Altura , y=RTvsCV$Riqueza)) +
+  geom_point(shape=1) +   
+  geom_smooth(method=lm) +
+  ggtitle ("Regresión lineal entre Riqueza y Altura") +
+  labs(x = "Altura (m)",y = "N° morfoespecies")
+RTCV
+
+### Por incidencia de gremios observada
+
+GFvsZA<- data.frame(Incidencias=c(2,14,18), Altitud=c(550,1700,2850))
+
+GFvsCV<- data.frame(Incidencias=c(11,15,21), Altura=c(1.25,3.5,32.5))
+
+cor.test(GFvsZA$Incidencias, GFvsZA$Altitud,  method="kendall") ### T = 3, p-value = 0.3333, tau =1
+
+cor.test(GFvsCV$Incidencias, GFvsCV$Altura,  method="kendall") ### T = 3, p-value = 0.3333, tau =1  ### directamente proporcional
+
+cor.test(GFvsZA$Incidencias, GFvsZA$Altitud,  method="spearman") ### Kendall Generalmente usado para medir la asociación ordinal entre dos varaibles cuantitativas S = 6, p-value = 1  rho = -0.5 #Inversamente proporcional
+
+cor.test(GFvsCV$Incidencias, GFvsCV$Altura,  method="spearman") ### S=0, p-value = 0.3333, rho =1  ### directamente proporcional
+
+
+
+######### Modelo regresión
+GFyZA <- lm(GFvsZA$Incidencias~GFvsZA$Altitud)
+GFyZA
+summary(GFyZA)
+
+GFZA<-ggplot(GFvsZA, aes(x=GFvsZA$Altitud , y=GFvsZA$Incidencias)) +
+  geom_point(shape=1) +   
+  geom_smooth(method=lm) +
+  ggtitle ("Regresión lineal entre Incidencias y Altitud") +
+  labs(x = "Altitud (MSNM)",y = "Incidencias observada(Gremios)")
+GFZA ##### Mal debería ser inversamente proporcional
+
+GFyCV <- lm(GFvsCV$Incidencias~GFvsCV$Altura)
+GFyCV
+summary(GFyCV)
+
+GFCV<-ggplot(GFvsCV, aes(x=GFvsCV$Altura, y=GFvsCV$Incidencias)) +
+  geom_point(shape=1) +   
+  geom_smooth(method=lm) +
+  ggtitle ("Regresión lineal entre gremios y Altura") +
+  labs(x = "Altura (m)",y = "Incidencia de gremios")
+GFCV
