@@ -1,0 +1,198 @@
+##### Ensayos de paletas de colores
+
+#### Paquete Wes Anderson
+
+library(wesanderson)
+
+DTAbeja<-iNEXT(MatrizDTZA, q=0, datatype="abundance")
+
+g<-ggiNEXT(DTAbeja, type=2, facet.var="none")+  theme_gray(base_size = 15) + labs(x = "Número de Individuos ", y = "Completitud del muestreo (CM)")+ theme(legend.position="right")
+
+g + scale_colour_manual(values= wes_palette("Darjeeling1", n = 3)) + scale_fill_manual(values= wes_palette("Darjeeling1", n = 3))
+
+### Tropical 
+
+MTroCV<-read.csv("INEXT Indices Tro DT (CSV).csv",header = T, row.names =NULL) [,-1]
+
+View(MTroCV)
+
+IETroCV<-iNEXT(MTroCV, q=c(0,1,2), datatype="abundance")
+IETroCV
+
+
+g<-ggiNEXT(IETroCV, type=1, facet.var="order")+  theme_gray(base_size = 15) + labs(x = "Número de Individuos ", y = "Diversidad")+ theme(legend.position="bottom")
+g
+
+g + scale_colour_manual(values= wes_palette("FantasticFox1",  3, type = "discrete")) + scale_fill_manual(values= wes_palette("FantasticFox1",3, type = "discrete"))
+
+### CV y Tamaño 
+
+CVTamano<-NSppXRas[ 1:27,]
+View(CVTamano)
+class(CVTamano)
+
+CVTM<-ggplot(CVTamano, aes(fill=CVTamano$Categorias, y=CVTamano$Morfoespecies, x=CVTamano$ZA)) +
+  geom_bar(stat="identity", position="dodge") +
+  theme(axis.text.x = element_text(angle = 0, vjust = 0.5, hjust = 0))+ ylab("N° Morfoespecies") + labs(fill="Tamaño")
+
+CVTM + scale_colour_manual(values= wes_palette("FantasticFox1")) + scale_fill_manual(values= wes_palette("FantasticFox1"))
+
+### ZA y Nidificación 
+
+ZANidificacion<-NSppXRas[64:108,]
+
+ZAND<-ggplot(ZANidificacion, aes(fill=ZANidificacion$Categorias, y=ZANidificacion$Morfoespecies, x=ZANidificacion$ZA)) +  geom_bar(stat="identity", position="dodge") +
+  theme(axis.text.x = element_text(angle = 0, vjust = 0.5, hjust = 0))+ ylab("N° Morfoespecies") + labs(fill="Nidificación")+ xlab("Zona altitudinal")
+
+ZAND + scale_colour_manual(values= wes_palette("Royal2")) + scale_fill_manual(values= wes_palette("Royal2"))
+
+#### Paquete Revistas
+
+library(ggsci)
+
+### Curva Acumulación
+
+DTAbeja<-iNEXT(MatrizDTZA, q=0, datatype="abundance")
+
+g1<-ggiNEXT(DTAbeja, type=2, facet.var="none")+  theme_gray(base_size = 15) + labs(x = "Número de Individuos ", y = "Completitud del muestreo (CM)")+ theme(legend.position="right")
+
+g1 + scale_color_simpsons()
+
+### Curva de rarefacción (TROPICAL)
+
+MTroCV<-read.csv("INEXT Indices Tro DT (CSV).csv",header = T, row.names =NULL) [,-1]
+
+View(MTroCV)
+
+IETroCV<-iNEXT(MTroCV, q=c(0,1,2), datatype="abundance")
+IETroCV
+
+
+g2<-ggiNEXT(IETroCV, type=1, facet.var="order")+  theme_gray(base_size = 15) + labs(x = "Número de Individuos ", y = "Diversidad")+ theme(legend.position="bottom")
+g
+
+g2 +scale_color_simpsons()
+
+### CV y Tamaño 
+
+CVTamano<-NSppXRas[ 1:27,]
+View(CVTamano)
+class(CVTamano)
+
+CVTM<-ggplot(CVTamano, aes(fill=CVTamano$Categorias, y=CVTamano$Morfoespecies, x=CVTamano$ZA)) +
+  geom_bar(stat="identity", position="dodge") +
+  theme(axis.text.x = element_text(angle = 0, vjust = 0.5, hjust = 0))+ ylab("N° Morfoespecies") + labs(fill="Tamaño")
+
+CVTM + scale_fill_jco()
+
+### ZA y Nidificación 
+
+ZANidificacion<-NSppXRas[64:108,]
+
+ZAND<-ggplot(ZANidificacion, aes(fill=ZANidificacion$Categorias, y=ZANidificacion$Morfoespecies, x=ZANidificacion$ZA)) +  geom_bar(stat="identity", position="dodge") +
+  theme(axis.text.x = element_text(angle = 0, vjust = 0.5, hjust = 0))+ ylab("N° Morfoespecies") + labs(fill="Nidificación")+ xlab("Zona altitudinal")
+
+ZAND +  scale_fill_simpsons()
+
+#### Paquete Museos y Arte
+
+library(MetBrewer)
+
+### Curva Acumulación
+
+DTAbeja<-iNEXT(MatrizDTZA, q=0, datatype="abundance")
+
+g1<-ggiNEXT(DTAbeja, type=2, facet.var="none")+  theme_gray(base_size = 15) + labs(x = "Número de Individuos ", y = "Completitud del muestreo (CM)")+ theme(legend.position="right")
+
+g1 + scale_color_manual(values=met.brewer("Peru1", 3))+ scale_fill_manual(values=met.brewer("Cross", 3))
+
+### Curva de rarefacción (TROPICAL)
+
+MTroCV<-read.csv("INEXT Indices Tro DT (CSV).csv",header = T, row.names =NULL) [,-1]
+
+View(MTroCV)
+
+IETroCV<-iNEXT(MTroCV, q=c(0,1,2), datatype="abundance")
+IETroCV
+
+
+g2<-ggiNEXT(IETroCV, type=1, facet.var="order")+  theme_gray(base_size = 15) + labs(x = "Número de Individuos ", y = "Diversidad")+ theme(legend.position="bottom")
+g
+
+g2 + scale_color_manual(values=met.brewer("Klimt", 3))+ scale_fill_manual(values=met.brewer("Klimt", 3))
+
+### CV y Tamaño 
+
+CVTamano<-NSppXRas[ 1:27,]
+View(CVTamano)
+class(CVTamano)
+
+CVTM<-ggplot(CVTamano, aes(fill=CVTamano$Categorias, y=CVTamano$Morfoespecies, x=CVTamano$ZA)) +
+  geom_bar(stat="identity", position="dodge") +
+  theme(axis.text.x = element_text(angle = 0, vjust = 0.5, hjust = 0))+ ylab("N° Morfoespecies") + labs(fill="Tamaño")
+
+CVTM +  scale_fill_manual(values=met.brewer("Cross", 3))
+
+
+### ZA y Nidificación 
+
+ZANidificacion<-NSppXRas[64:108,]
+
+ZAND<-ggplot(ZANidificacion, aes(fill=ZANidificacion$Categorias, y=ZANidificacion$Morfoespecies, x=ZANidificacion$ZA)) +  geom_bar(stat="identity", position="dodge") +
+  theme(axis.text.x = element_text(angle = 0, vjust = 0.5, hjust = 0))+ ylab("N° Morfoespecies") + labs(fill="Nidificación")+ xlab("Zona altitudinal")
+
+
+ZAND+   scale_fill_manual(values=met.brewer("Redon", 5))
+
+
+#### Paquete Ghibli
+
+library(ghibli)
+library(cli)
+
+### Curva Acumulación
+
+DTAbeja<-iNEXT(MatrizDTZA, q=0, datatype="abundance")
+
+g1<-ggiNEXT(DTAbeja, type=2, facet.var="none")+  theme_gray(base_size = 15) + labs(x = "Número de Individuos ", y = "Completitud del muestreo (CM)")+ theme(legend.position="right")
+
+g1 + scale_colour_ghibli_d(name = "MononokeMedium", direction = -1)+ scale_fill_ghibli_d(name = "MononokeMedium", direction = -1)
+
+### Curva de rarefacción (TROPICAL)
+
+MTroCV<-read.csv("INEXT Indices Tro DT (CSV).csv",header = T, row.names =NULL) [,-1]
+
+View(MTroCV)
+
+IETroCV<-iNEXT(MTroCV, q=c(0,1,2), datatype="abundance")
+IETroCV
+
+
+g2<-ggiNEXT(IETroCV, type=1, facet.var="order")+  theme_gray(base_size = 15) + labs(x = "Número de Individuos ", y = "Diversidad")+ theme(legend.position="bottom")
+g
+
+g2 + scale_colour_ghibli_d(name = "PonyoMedium", direction = 1)+ scale_fill_ghibli_d(name = "PonyoMedium", direction = 1)
+
+
+### CV y Tamaño 
+
+CVTamano<-NSppXRas[ 1:27,]
+View(CVTamano)
+class(CVTamano)
+
+CVTM<-ggplot(CVTamano, aes(fill=CVTamano$Categorias, y=CVTamano$Morfoespecies, x=CVTamano$ZA)) +
+  geom_bar(stat="identity", position="dodge") +
+  theme(axis.text.x = element_text(angle = 0, vjust = 0.5, hjust = 0))+ ylab("N° Morfoespecies") + labs(fill="Tamaño")
+
+CVTM + scale_fill_ghibli_d("KikiLight", direction = 1)
+
+### ZA y Nidificación 
+
+ZANidificacion<-NSppXRas[64:108,]
+
+ZAND<-ggplot(ZANidificacion, aes(fill=ZANidificacion$Categorias, y=ZANidificacion$Morfoespecies, x=ZANidificacion$ZA)) +  geom_bar(stat="identity", position="dodge") +
+  theme(axis.text.x = element_text(angle = 0, vjust = 0.5, hjust = 0))+ ylab("N° Morfoespecies") + labs(fill="Nidificación")+ xlab("Zona altitudinal")
+
+ZAND + scale_fill_ghibli_d("KikiMedium", direction = -1)
+
+
