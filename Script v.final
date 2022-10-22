@@ -1,0 +1,443 @@
+######### Script final (DEPURADO)#####
+
+### Pruebas exploratorias generales
+
+library(ggplot2)
+
+
+### Diferencias promedio de morfoespecies por altitud 
+
+ConteosAltitud<-read.csv("Conteos ZA por puntos altitudinales .csv",header = T, row.names =NULL)
+View(ConteosZA)
+
+### Resumen descriptivos
+
+ddply(ConteosAltitud, 'Zona.altitudinal', summarise, grp.mean=mean(Morfoespecies),
+      grp.median=median(Morfoespecies),
+      grp.SD=sd(Morfoespecies))
+
+### Visualización
+
+ggplot(ConteosAltitud)+
+  geom_boxplot(aes(x=Zona.altitudinal, y=Morfoespecies, fill=Zona.altitudinal),outlier.colour = "red", outlier.shape = 1)
+
+### Normalidad 
+
+ggplot(ConteosAltitud, aes(sample = Morfoespecies, colour = Zona.altitudinal)) +
+  stat_qq() +
+  stat_qq_line()
+
+lillie.test(x = ConteosAltitud$Morfoespecies) #### D = 0.23897, p-value = 3.622e-09, ### No normal
+
+### Homocedasticidad
+
+leveneTest(y = ConteosAltitud$Morfoespecies, group = ConteosAltitud$Zona.altitudinal , center = "mean") ###### p = 0.4111 no hay dif entre varianzas homocedástico
+
+### Test de diferencias por pares
+
+kruskal.test(Morfoespecies~Zona.altitudinal, data = ConteosAltitud)#### chi-squared = 5.2191, df = 2, p-value = 0.07357 #### No hay diferencias significativas
+
+### Distribución de morfoespecies por ZA y CV (Diagrama Venn)
+
+library(eulerr)
+
+### Ensamblaje general 
+
+MorfosGen<- euler(c("Andina" = 3, "Sub Andina" = 15, "Tropical" = 29, "Andina&Sub Andina" = 1, "Sub Andina&Tropical" = 12, "Andina&Tropical" = 3, "Andina&Sub Andina&Tropical" = 2))
+
+plot(MorfosGen, quantities = TRUE,lty= c(1, 1, 1), lwd = c(2, 2, 2),fill=c("White", "White", "White"), cex= c(25,25,25) )
+
+### Andina
+MorfosAnd<- euler(c("Boscosa" = 3, "Arbustiva" = 3, "Herbácea" = 3, "Boscosa&Arbustiva" = 0, "Arbustiva&Herbácea" = 0, "Boscosa&Herbácea" = 0, "Boscosa&Arbustiva&Herbácea" = 0))
+plot(MorfosAnd, quantities = TRUE,lty= c(1, 1, 1), lwd = c(2, 2, 2),fill=c("White", "White", "White"), cex= c(25,25,25) )
+
+### Sub Andina
+MorfosSAnd<- euler(c("Boscosa" = 25, "Arbustiva" = 1, "Herbácea" = 2, "Boscosa&Arbustiva" = 1, "Arbustiva&Herbácea" = 1, "Boscosa&Herbácea" = 2, "Boscosa&Arbustiva&Herbácea" = 1))
+plot(MorfosSAnd, quantities = TRUE,lty= c(1, 1, 1), lwd = c(2, 2, 2),cex=c(25,25,25),fill=c("White", "White", "White") )
+
+### Tropical
+MorfosTro<- euler(c("Boscosa" = 18, "Arbustiva" = 9, "Herbácea" = 2, "Boscosa&Arbustiva" = 10, "Arbustiva&Herbácea" = 1, "Boscosa&Herbácea" = 3, "Boscosa&Arbustiva&Herbácea" = 3))
+plot(MorfosTro, quantities = TRUE,lty= c(1, 1, 1), lwd = c(2, 2, 2),fill=c("White", "White", "White"), cex=(c(25,25,25)) )
+
+### Calculando la DT con INEXT
+
+library(iNEXT)
+library(MetBrewer)
+library(ghibli)
+library(wesanderson)
+
+MatrizDTZA<-read.csv("Matriz de incidencias INEXT DT ZA corregido.csv",header = T, row.names =NULL) [,-1]
+View(MatrizDTZA)
+
+#### Curva de acumulación por completitud del muestreo en las ZA
+
+DTAbeja<-iNEXT(MatrizDTZA, q=0, datatype="abundance")
+
+g1<-ggiNEXT(DTAbeja, type=2, facet.var="none")+  theme_gray(base_size = 15) + labs(x = "N° Individuos ", y = "Completitud del muestreo (CM)")+ theme(legend.position="right")
+
+g1 + scale_colour_manual(values= met.brewer("Peru1", n = 3)) + scale_fill_manual(values= met.brewer("Peru1", n = 3))
+
+### Curvas de rarefacción con calculo por tamaño de muestreo separadas por estimador 
+
+### Andina
+
+MAndCV<-read.csv("INEXT Indices And DT (CSV).csv",header = T, row.names =1) 
+
+View(MAndCV)
+
+IEAndCV<-iNEXT(MAndCV, q=c(0,1,2), datatype="abundance")
+IEAndCV
+
+
+g2<-ggiNEXT(IEAndCV, type=1, facet.var="order")+  theme_gray(base_size = 15) + labs(x = "N° Individuos ", y = "Diversidad de especies")+ theme(legend.position="bottom")
+
+g2 + scale_colour_manual(values= met.brewer("Klimt",  3, type = "discrete")) + scale_fill_manual(values= met.brewer("Klimt",3, type = "discrete"))
+
+### Sub Andina
+  
+MSAndCV<-read.csv("INEXT Indices SAnd DT (CSV).csv",header = T, row.names =NULL) [,-1]
+  
+View(MSAndCV)
+  
+IESAndCV<-iNEXT(MSAndCV, q=c(0,1,2), datatype="abundance")
+IESAndCV
+  
+g3<-ggiNEXT(IESAndCV, type=1, facet.var="order")+  theme_gray(base_size = 15) + labs(x = "N° de Individuos ", y = "Diversidad de especies")+ theme(legend.position="bottom")
+  g
+  
+g3 + scale_colour_manual(values= met.brewer("Klimt",  3, type = "discrete")) + scale_fill_manual(values= met.brewer("Klimt",3, type = "discrete"))
+  
+### Tropical 
+  
+MTroCV<-read.csv("INEXT Indices Tro DT (CSV).csv",header = T, row.names =NULL) [,-1]
+  
+View(MTroCV)
+  
+IETroCV<-iNEXT(MTroCV, q=c(0,1,2), datatype="abundance")
+IETroCV
+  
+  
+g4<-ggiNEXT(IETroCV, type=1, facet.var="order")+  theme_gray(base_size = 15) + labs(x = "N° de Individuos ", y = "Diversidad de especies")+ theme(legend.position="bottom")
+  g
+  
+g4 + scale_colour_manual(values= met.brewer("Klimt",  3, type = "discrete")) + scale_fill_manual(values= met.brewer("Klimt",3, type = "discrete"))
+  
+### Calculando DF 
+
+### Método de EF
+
+library(mFD)
+
+### Dataframe rasgos por especies
+
+SppXRas<-read.csv("Matriz 2 para cluster SXR.csv",header = T, row.names= 1)
+SppXRasMod <- transform(SppXRas,ord1 = factor(ord1, levels=c(1:3),ordered = TRUE ),ord2=factor(ord2,levels=c(1:3),ordered = TRUE ))
+class(SppXRasMod [,1])
+class(SppXRasMod [,2])
+str(SppXRasMod) ######## Transformaciones de los datos para lograr rasgos ordinales 
+
+### Matrix de especies por ensamblaje 
+
+SppEnsamble<-read.csv("Matriz 1 Species y Ensamblaje .csv",header = T, row.names= 1)
+
+EnsXSpp<-as.matrix(SppEnsamble)
+EnsXSpp
+
+### Tabla con las categorías de los rasgos 
+
+DescripcionRas<-read.csv("Tabla 1 Descripción de rasgos.csv",header = T)
+
+TypXRas<-DescripcionRas[ , -c(3:7)]
+
+### Resumen de los rasgos por tipo
+
+TypXRasSum<- mFD::sp.tr.summary(tr_cat = TypXRas,sp_tr= SppXRasMod,stop_if_NA = TRUE)
+
+
+TypXRasSum$"tr_types" ####### Tipos de ragos = dos factores ordinales y dos nominales 
+
+TypXRasSum$"mod_list"    ######## Como están organizados   
+
+### Resumen de spp por ensamblaje dado el peso (Densidad=Abundancia)
+
+SppXEnsSum<- mFD::asb.sp.summary(asb_sp_w =EnsXSpp)
+
+
+AbsSpp<-SppXEnsSum$"sp_tot_w"  ########### Abundancias totales por spp independiente del ensamble
+
+
+AbsSppEns<-SppXEnsSum$"asb_tot_w"   
+AbsSppEns #### Valores absolutos
+
+SppXEnsSum$"asb_sp_richn"  ###### Riqueza spp x ensamble
+
+SppXEnsSum$"asb_sp_nm" ###### Quienes estan en el ensamblaje y que cantidad
+
+OccXSpp<-SppXEnsSum$"asb_sp_occ" ###### Resumen por ocurrencias de spp en ensamblajes
+OccXSpp
+
+### Especies a EF, agrupando las especies en EF de acuerdo con las características funcionales (gremios)
+
+
+EF <- mFD::sp.to.fe(
+  sp_tr       = SppXRasMod, 
+  tr_cat      = TypXRas, 
+  fe_nm_type  = "fe_rank", 
+  check_input = TRUE) 
+
+EF
+
+### Resumen e información importante
+
+EF$"fe_nm" ### EF 1 al 27 ########### Conteo de los EF, Cuantos hay
+
+EF$"sp_fe" ###### Spp y los EF a los que pertenecen 
+
+write.csv(EF$"sp_fe", "Gremios.csv")
+
+EF$"fe_tr" ###### Descripción de los EF y las categorías de rasgos que los componen
+
+write.csv(EF$"fe_tr", "Gremios.csv")
+
+EF$"fe_nb_sp" ##### Numero de spps por EF/ Gremio
+
+write.csv(EF$"fe_nb_sp", "Gremios.csv")
+
+EF$"details_fe"
+
+### Índices de DF para EF 
+
+### Input
+
+### abs_sp_occ = Matriz de abundancias por ensambles transformada en ocurrencias binarias 
+
+### sp_to_fe = lista con información generada por el agrupamiento en EF 
+
+### Parámetros 
+## ind_nm = cadena de caracteres para especificar el índice a calcular Fred= redundancia funciona, Fored = sobre redundancia funcional, Fvul= vulnerabilidad funcional 
+
+DFXEF<- mFD::alpha.fd.fe(
+  asb_sp_occ       = OccXSpp, 
+  sp_to_fe         = EF,
+  ind_nm           = c("fred", "fored", "fvuln"),
+  check_input      = TRUE,
+  details_returned = TRUE)
+
+DFXEF$asb_fdfe ### Lista con información sobre los índices 
+
+class(DFXEF) ## Lista 
+str(DFXEF) ### dos elementos
+
+### Output
+
+class(DFXEF$asb_fdfe) ### Matrix con información calculada y resuminada 
+DFXEF$asb_fdfe ### Valores de los índices 
+
+### Método disimilitud entre pares de especies
+
+### Calculando las distancias pareadas método Gower
+
+### Input
+
+## sp_tr = Dataframe con rasgos por especies modificado para corregir la clase de los rasgos (ie numero a factor ordenado)
+## tr_cat = Dataframe con descripcion y categorización de rasgos.
+
+### Parámetros 
+##metric = gower = método usado para calcular distancias dados rasgos tipo factor 
+## scale_euclid = scale_center = método usado para calcular distancias dados rasgos continuos 
+
+DisSpp<- mFD::funct.dist(sp_tr  = SppXRasMod,tr_cat= TypXRas,
+metric= "gower",                                  scale_euclid  = "scale_center",                     ordinal_var   = "classic",                          weight_type   = "equal",                            stop_if_NA    = TRUE)
+
+DisSpp 
+class(DisSpp) ## Distancias 
+str(DisSpp)
+DisSpp<-as.matrix(DisSpp)
+DisSpp ### Matrix escalonada 
+
+### Agrupación por distancias pareadas método Ward
+
+library(stats)
+
+### Input distancias debe estar en class= "dist"
+
+ClusterBee<- hclust(DisSpp, method = "ward.D")
+plot(ClusterBee) ### Gráfica dendrograma
+
+### Distancias por ZA
+
+### Andina 
+
+SXRAndina<-read.csv("Rasgos Andina CV.csv",header = T, row.names= 1)
+SXRAndinaMod <- transform(SXRAndina,ord1 = factor(ord1, levels=c(1:3),ordered = TRUE ),ord2=factor(ord2,levels=c(1:3),ordered = TRUE ))
+class(SppXRasMod [,1])
+class(SppXRasMod [,2])
+
+SXEAndina<-read.csv("Abundancia Andina CV para matriz de distancia.csv",header = T, row.names= 1)
+
+EXSAndina<-as.matrix(SXEAndina)
+EXSAndina
+
+DSAndina<- mFD::funct.dist(sp_tr  = SXRAndinaMod,tr_cat= TypXRas,
+metric= "gower",                                  scale_euclid  = "scale_center",                     ordinal_var   = "classic",                          weight_type   = "equal",                            stop_if_NA    = TRUE)
+
+DSAndina<-as.matrix(DSAndina)
+DSAndina ### Matrix escalonada para cálculo de números de Hill
+
+####### Sub Andina 
+
+SXRSAndina<-read.csv("Rasgos Sub Andina CV.csv",header = T, row.names= 1)
+SXRSAndinaMod <- transform(SXRSAndina,ord1 = factor(ord1, levels=c(1:3),ordered = TRUE ),ord2=factor(ord2,levels=c(1:3),ordered = TRUE ))
+class(SppXRasMod [,1])
+class(SppXRasMod [,2])
+
+SXESAndina<-read.csv("Abundancia Sub Andina CV para matriz distncia.csv",header = T, row.names= 1)
+
+EXSSAndina<-as.matrix(SXESAndina)
+EXSSAndina
+
+DSSAndina<- mFD::funct.dist(sp_tr  = SXRSAndinaMod,tr_cat= TypXRas,
+metric= "gower",                                  scale_euclid  = "scale_center",                     ordinal_var   = "classic",                          weight_type   = "equal",                            stop_if_NA    = TRUE)
+
+DSSAndina<-as.matrix(DSSAndina)
+DSSAndina ### Matrix escalonada para cálculo de números de Hill
+
+### Tropical 
+
+SXRTropical<-read.csv("Rasgos Tropical CV.csv",header = T, row.names= 1)
+SXRTropicalMod <- transform(SXRTropical,ord1 = factor(ord1, levels=c(1:3),ordered = TRUE ),ord2=factor(ord2,levels=c(1:3),ordered = TRUE ))
+class(SppXRasMod [,1])
+class(SppXRasMod [,2])
+
+SXETropical<-read.csv("Abundancia Tropical CV para matriz distancia.csv",header = T, row.names= 1)
+
+EXSTropical<-as.matrix(SXETropical)
+EXSTropical
+
+DSTropical<-mFD::funct.dist(sp_tr  = SXRTropicalMod,tr_cat= TypXRas,
+metric= "gower",                                  scale_euclid  = "scale_center",                     ordinal_var   = "classic",                          weight_type   = "equal",                            stop_if_NA    = TRUE)
+
+DSTropical<-as.matrix(DSTropical)
+DSTropical ### Matrix escalonada para cálculo de números de Hill
+
+### Números de Hill por ZA método Chao et al, 2019
+
+### Andina
+
+AbAndina<- read.csv("Abu Andina.csv", header = T, row.names = 1)
+View(AbAndina)
+
+AbAndina= list(Bo=AbAndina$Boscosa, Ar=AbAndina$Arbustiva, He=AbAndina$Herbacea) ### 
+class(AbAndina)### lista
+class(AbAndina$Bo)#### vector con valores enteros de datos dadas abundancias 
+
+
+### Cálculos para N sitios (CV)
+
+## Función FunD en Archivo Paquete FunD Chao 2019
+
+NAndina<-FunD(AbAndina, DSAndina, seq(min(DSAndina[DSAndina>0]), max(DSAndina), length.out = 5), c(0, 1, 2), 50, "abundance")
+
+View(NAndina$forq)
+
+write.csv(NAndina$forq, "AndinaQ.csv") ### Perfil q
+write.csv(NAndina$fortau, "AndinaT.csv")### Perfil T
+
+### Gráficas
+
+GraAnd<-PlotFD(FunD(AbAndina, DSAndina, seq(min(DSAndina[DSAndina>0]), max(DSAndina), length.out = 5), c(0,1,2), 50, "abundance"), AbAndina, DSAndina, "abundance")
+
+### Sub Andina
+
+AbSAndina<- read.csv("Abu SAndina.csv", header = T, row.names = 1)
+View(AbSAndina)
+
+AbSAndina= list(Bo=AbSAndina$Boscosa, Ar=AbSAndina$Arbustiva, He=AbSAndina$Herbacea) ### 
+class(AbAndina)### lista
+class(AbAndina$Bo)#### vector con valores enteros de datos dadas abundancias 
+
+### Cálculos para N sitios (CV)
+
+NSAndina<-FunD(AbSAndina, DSSAndina, seq(min(DSSAndina[DSSAndina>0]), max(DSSAndina), length.out = 5), c(0, 1, 2), 50, "abundance")
+
+View(NAndina$forq)
+write.csv(NSAndina$forq, "SAndinaQ.csv")
+write.csv(NSAndina$fortau, "SAndinat.csv")
+
+### Gráficas
+
+PlotFD(FunD(AbSAndina, DSSAndina, seq(min(DSSAndina[DSSAndina>0]), max(DSSAndina), length.out = 5), c(0,1,2), 50, "abundance"), AbSAndina, DSSAndina, "abundance")
+
+
+### Tropical 
+
+AbTropical<- read.csv("Abu Tropical.csv", header = T, row.names = 1)
+View(AbSAndina)
+
+AbTropical= list(Bo=AbTropical$Boscosa, Ar=AbTropical$Arbustiva, He=AbTropical$Herbacea) ### 
+class(AbAndina)### lista
+class(AbAndina$Bo)#### vector con valores enteros de datos dadas abundancias 
+
+### Cálculos para N sitios (CV)
+
+
+NTropical<-FunD(AbTropical, DSTropical, seq(min(DSTropical[DSTropical>0]), max(DSTropical), length.out = 5), c(0, 1, 2), 50, "abundance")
+
+View(NAndina$forq)
+write.csv(NTropical$forq, "TropicalQ.csv")
+write.csv(NTropical$fortau, "TropicalT.csv")
+
+### Gráficas
+
+PlotFD(FunD(AbTropical, DSTropical, seq(min(DSTropical[DSTropical>0]), max(DSTropical), length.out = 5), c(0,1,2), 50, "abundance"), AbTropical, DSTropical, "abundance")
+
+### Gráficos suplementarios
+
+### Número de morfoespecies por rasgos 
+
+NSppXRas<-read.csv("Conteos rasgos y categorias.csv", header = T)
+View(NSppXRas)
+
+class(NSppXRas)
+str(NSppXRas)
+
+### CV y Tamaño 
+
+CVTamano<-NSppXRas[ 1:27,]
+View(CVTamano)
+class(CVTamano)
+
+CVTM<-ggplot(CVTamano, aes(fill=CVTamano$Categorias, y=CVTamano$Morfoespecies, x=CVTamano$ZA)) +
+  geom_bar(stat="identity", position="dodge") +
+  theme(axis.text.x = element_text(angle = 0, vjust = 0.5, hjust = 0))+ ylab("N° Morfoespecies") + labs(fill="Tamaño")+ xlab("Zona altitudinal")
+
+CVTM + scale_fill_manual(values= met.brewer("Hiroshige", 3))
+
+### ZA y Socialidad
+
+ZASocialidad<-NSppXRas[28:63,]
+
+ZASC<-ggplot(ZASocialidad, aes(fill=ZASocialidad$Categorias, y=ZASocialidad$Morfoespecies, x=ZASocialidad$ZA)) +
+  geom_bar(stat="identity", position="dodge") +
+  theme(axis.text.x = element_text(angle = 0, vjust = 0.5, hjust = 0))+ ylab("N° Morfoespecies") + labs(fill="Socialidad")+ xlab("Zona altitudinal")
+
+ZASC+ scale_fill_manual(values= met.brewer("Cross",4))
+
+### ZA y Nidificación 
+
+ZANidificacion<-NSppXRas[64:108,]
+
+ZAND<-ggplot(ZANidificacion, aes(fill=ZANidificacion$Categorias, y=ZANidificacion$Morfoespecies, x=ZANidificacion$ZA)) +  geom_bar(stat="identity", position="dodge") +
+  theme(axis.text.x = element_text(angle = 0, vjust = 0.5, hjust = 0))+ ylab("N° Morfoespecies") + labs(fill="Nidificación")+ xlab("Zona altitudinal")
+
+ZAND + scale_fill_manual(values= met.brewer("Hiroshige",5))
+
+### ZA y Especialización
+
+ZAEspecializacion<-NSppXRas[109:135,]
+
+ZAEP<-ggplot(ZAEspecializacion, aes(fill=ZAEspecializacion$Categorias, y=ZAEspecializacion$Morfoespecies, x=ZAEspecializacion$ZA)) +  geom_bar(stat="identity", position = "dodge") +
+  theme(axis.text.x = element_text(angle = 0, vjust = 0.5, hjust = 0))+ ylab("N° Morfoespecies") + labs(fill="Especialización")+ xlab("Zona altitudinal")
+
+ZAEP + scale_fill_manual(values= met.brewer("Hiroshige",3))
+
