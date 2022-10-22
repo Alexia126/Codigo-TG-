@@ -1,4 +1,4 @@
-######### Script final (DEPURADO)#####
+######### Script final #####
 
 ### Pruebas exploratorias generales
 
@@ -45,19 +45,24 @@ library(eulerr)
 
 MorfosGen<- euler(c("Andina" = 3, "Sub Andina" = 15, "Tropical" = 29, "Andina&Sub Andina" = 1, "Sub Andina&Tropical" = 12, "Andina&Tropical" = 3, "Andina&Sub Andina&Tropical" = 2))
 
-plot(MorfosGen, quantities = TRUE,lty= c(1, 1, 1), lwd = c(2, 2, 2),fill=c("White", "White", "White"), cex= c(25,25,25) )
+plot(MorfosGen, quantities = TRUE,lty= c(1, 1, 1), lwd = c(3, 3, 3),fill="transparent", fontsize= c(25,25,25), cex= c(10,10,10),col=c("#CD3700", "#EE7600", "#00C5CD"), alpha=0.7 )
 
 ### Andina
 MorfosAnd<- euler(c("Boscosa" = 3, "Arbustiva" = 3, "Herbácea" = 3, "Boscosa&Arbustiva" = 0, "Arbustiva&Herbácea" = 0, "Boscosa&Herbácea" = 0, "Boscosa&Arbustiva&Herbácea" = 0))
-plot(MorfosAnd, quantities = TRUE,lty= c(1, 1, 1), lwd = c(2, 2, 2),fill=c("White", "White", "White"), cex= c(25,25,25) )
+
+plot(MorfosAnd, quantities = TRUE,lty= c(1, 1, 1), lwd = c(3, 3, 3),fill="transparent", fontsize= c(25,25,25), cex= c(10,10,10),col=c("#B03060", "#FFC125", "#A020F0"), alpha=0.7 )
 
 ### Sub Andina
+
 MorfosSAnd<- euler(c("Boscosa" = 25, "Arbustiva" = 1, "Herbácea" = 2, "Boscosa&Arbustiva" = 1, "Arbustiva&Herbácea" = 1, "Boscosa&Herbácea" = 2, "Boscosa&Arbustiva&Herbácea" = 1))
-plot(MorfosSAnd, quantities = TRUE,lty= c(1, 1, 1), lwd = c(2, 2, 2),cex=c(25,25,25),fill=c("White", "White", "White") )
+
+plot(MorfosSAnd, quantities = TRUE,lty= c(1, 1, 1), lwd = c(3, 3, 3),fill="transparent", fontsize= c(25,25,25), cex= c(10,10,10),col=c("#B03060", "#FFC125", "#A020F0"), alpha=0.7 )
 
 ### Tropical
+
 MorfosTro<- euler(c("Boscosa" = 18, "Arbustiva" = 9, "Herbácea" = 2, "Boscosa&Arbustiva" = 10, "Arbustiva&Herbácea" = 1, "Boscosa&Herbácea" = 3, "Boscosa&Arbustiva&Herbácea" = 3))
-plot(MorfosTro, quantities = TRUE,lty= c(1, 1, 1), lwd = c(2, 2, 2),fill=c("White", "White", "White"), cex=(c(25,25,25)) )
+
+plot(MorfosTro,quantities = TRUE,lty= c(1, 1, 1), lwd = c(3, 3, 3),fill="transparent", fontsize= c(25,25,25), cex= c(10,10,10),col=c("#B03060", "#FFC125", "#A020F0"), alpha=0.7 )
 
 ### Calculando la DT con INEXT
 
@@ -82,12 +87,9 @@ g1 + scale_colour_manual(values= met.brewer("Peru1", n = 3)) + scale_fill_manual
 ### Andina
 
 MAndCV<-read.csv("INEXT Indices And DT (CSV).csv",header = T, row.names =1) 
-
 View(MAndCV)
-
 IEAndCV<-iNEXT(MAndCV, q=c(0,1,2), datatype="abundance")
 IEAndCV
-
 
 g2<-ggiNEXT(IEAndCV, type=1, facet.var="order")+  theme_gray(base_size = 15) + labs(x = "N° Individuos ", y = "Diversidad de especies")+ theme(legend.position="bottom")
 
@@ -96,14 +98,11 @@ g2 + scale_colour_manual(values= met.brewer("Klimt",  3, type = "discrete")) + s
 ### Sub Andina
   
 MSAndCV<-read.csv("INEXT Indices SAnd DT (CSV).csv",header = T, row.names =NULL) [,-1]
-  
 View(MSAndCV)
-  
 IESAndCV<-iNEXT(MSAndCV, q=c(0,1,2), datatype="abundance")
 IESAndCV
   
 g3<-ggiNEXT(IESAndCV, type=1, facet.var="order")+  theme_gray(base_size = 15) + labs(x = "N° de Individuos ", y = "Diversidad de especies")+ theme(legend.position="bottom")
-  g
   
 g3 + scale_colour_manual(values= met.brewer("Klimt",  3, type = "discrete")) + scale_fill_manual(values= met.brewer("Klimt",3, type = "discrete"))
   
@@ -395,7 +394,7 @@ PlotFD(FunD(AbTropical, DSTropical, seq(min(DSTropical[DSTropical>0]), max(DSTro
 
 ### Número de morfoespecies por rasgos 
 
-NSppXRas<-read.csv("Conteos rasgos y categorias.csv", header = T)
+NSppXRas<-read.csv("Conteos Modificados (Barras).csv", header = T)
 View(NSppXRas)
 
 class(NSppXRas)
@@ -407,37 +406,65 @@ CVTamano<-NSppXRas[ 1:27,]
 View(CVTamano)
 class(CVTamano)
 
-CVTM<-ggplot(CVTamano, aes(fill=CVTamano$Categorias, y=CVTamano$Morfoespecies, x=CVTamano$ZA)) +
-  geom_bar(stat="identity", position="dodge") +
-  theme(axis.text.x = element_text(angle = 0, vjust = 0.5, hjust = 0))+ ylab("N° Morfoespecies") + labs(fill="Tamaño")+ xlab("Zona altitudinal")
+CVTM<-ggplot(CVTamano, aes(CVTamano$CV, CVTamano$Morfoespecies, fill = CVTamano$Categorias))+
+  geom_col(position = "stack", alpha=1)+
+  labs(x="Cobertura Vegetal",y="N°Morfoespecies")+
+  theme_gray()+
+  scale_fill_fivethirtyeight()+
+  theme(legend.position = "bottom",
+        legend.title=element_text(),
+        axis.text.x = element_text(angle=0))+
+  facet_grid(.~CVTamano$ZA)
 
-CVTM + scale_fill_manual(values= met.brewer("Hiroshige", 3))
+
+CVTM2 + scale_fill_manual(values= met.brewer("Cross",3))
 
 ### ZA y Socialidad
 
-ZASocialidad<-NSppXRas[28:63,]
+CVSocialidad<-NSppXRas[28:63,]
 
-ZASC<-ggplot(ZASocialidad, aes(fill=ZASocialidad$Categorias, y=ZASocialidad$Morfoespecies, x=ZASocialidad$ZA)) +
-  geom_bar(stat="identity", position="dodge") +
-  theme(axis.text.x = element_text(angle = 0, vjust = 0.5, hjust = 0))+ ylab("N° Morfoespecies") + labs(fill="Socialidad")+ xlab("Zona altitudinal")
+CVSC<-ggplot(CVSocialidad, aes(CVSocialidad$CV, CVSocialidad$Morfoespecies, fill = CVSocialidad$Categorias))+
+  geom_col(position = "stack", alpha=1)+
+  labs(x="Cobertura Vegetal",y="N°Morfoespecies")+
+  theme_gray()+
+  scale_fill_fivethirtyeight()+
+  theme(legend.position = "bottom",
+        legend.title=element_text(),
+        axis.text.x = element_text(angle=0))+
+  facet_grid(.~CVSocialidad$ZA)
 
-ZASC+ scale_fill_manual(values= met.brewer("Cross",4))
+CVSC+ scale_fill_manual(values= met.brewer("Cross",4))
 
-### ZA y Nidificación 
+### CV y Nidificación 
 
-ZANidificacion<-NSppXRas[64:108,]
+CVNidificacion<-NSppXRas[64:108,]
 
-ZAND<-ggplot(ZANidificacion, aes(fill=ZANidificacion$Categorias, y=ZANidificacion$Morfoespecies, x=ZANidificacion$ZA)) +  geom_bar(stat="identity", position="dodge") +
-  theme(axis.text.x = element_text(angle = 0, vjust = 0.5, hjust = 0))+ ylab("N° Morfoespecies") + labs(fill="Nidificación")+ xlab("Zona altitudinal")
+CVND<-ggplot(CVNidificacion, aes(CVNidificacion$CV, CVNidificacion$Morfoespecies, fill = CVNidificacion$Categorias))+
+  geom_col(position = "stack", alpha=1)+
+  labs(x="Cobertura Vegetal",y="N°Morfoespecies")+
+  theme_gray()+
+  scale_fill_fivethirtyeight()+
+  theme(legend.position = "bottom",
+        legend.title=element_text(),
+        axis.text.x = element_text(angle=0))+
+  facet_grid(.~CVNidificacion$ZA)
 
-ZAND + scale_fill_manual(values= met.brewer("Hiroshige",5))
+CVND + scale_fill_manual(values= met.brewer("Cross",5))
 
-### ZA y Especialización
+### CV y Especialización
 
-ZAEspecializacion<-NSppXRas[109:135,]
+CVEspecializacion<-NSppXRas[109:135,]
 
-ZAEP<-ggplot(ZAEspecializacion, aes(fill=ZAEspecializacion$Categorias, y=ZAEspecializacion$Morfoespecies, x=ZAEspecializacion$ZA)) +  geom_bar(stat="identity", position = "dodge") +
-  theme(axis.text.x = element_text(angle = 0, vjust = 0.5, hjust = 0))+ ylab("N° Morfoespecies") + labs(fill="Especialización")+ xlab("Zona altitudinal")
+CVEP<-ggplot(CVEspecializacion, aes(CVEspecializacion$CV, CVEspecializacion$Morfoespecies, fill = CVEspecializacion$Categorias))+
+  geom_col(position = "stack", alpha=1)+
+  labs(x="Cobertura Vegetal",y="N°Morfoespecies")+
+  theme_gray()+
+  scale_fill_fivethirtyeight()+
+  theme(legend.position = "bottom",
+        legend.title=element_text(),
+        axis.text.x = element_text(angle=0))+
+  facet_grid(.~CVEspecializacion$ZA)
 
-ZAEP + scale_fill_manual(values= met.brewer("Hiroshige",3))
+
+CVEP + scale_fill_manual(values= met.brewer("Cross",3))
 
