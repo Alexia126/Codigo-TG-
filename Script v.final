@@ -260,8 +260,8 @@ library(stats)
 
 ### Input distancias debe estar en class= "dist"
 
-ClusterBee<- hclust(DisSpp, method = "ward.D")
-plot(ClusterBee) ### Gráfica dendrograma
+ClusterBee<- hclust(DisSpp, method = "ward.D2")
+plot(ClusterBee, labels = c("Agapostemon sp. 1" , "Anthodioctes costaricensis cf","Anthoporini sp. 1","Anthoporini sp. 2","Anthoporini sp. 3","Apis mellifera ","Augochlorini sp.1","Augochlorini sp.2","Augochlorini sp.3","Bombus atratus","Bombus sp.1","Cephalotrigona sp.1","Cephalotrigona sp.2","Cephalotrigona sp.3","Cephalotrigona zexmeniae","Eucerini sp.1","Euglossa sp.1","Euglossa sp.2","Euglossa sp.3","Eulaema meriana cf","Halictini sp.1","Halictini sp.2","Halictini sp.3","Megachile sp.1","Megachile sp.2","Melipona beecheii cf","Melipona nigrescens ","Melipona sp. 1 cf","Meliponini sp.1","Meliponini sp.10","Meliponini sp.11","Meliponini sp.2","Meliponini sp.3","Meliponini sp.4","Meliponini sp.5","Meliponini sp.6","Meliponini sp.7","Meliponini sp.8","Meliponini sp.9","Neocorynura sp. 1 cf","Oxytrigona daemonica cf","Oxytrigona mellicolor cf","Oxytrigona sp.1","Parapartamona sp. 1","Paratrigona eutaeniata cf","Paratrigona ornaticeps cf","Paratrigona rinconi cf","Partamona musarum cf","Partamona peckolti cf","Partamona sp.1","Plebeia sp.1","Plebeia sp.2","Plebeia sp.3","Protandrena sp.1","Scaptotrigona pectoralis cf","Scaptotrigona sp. 1","Scaptotrigona sp. 2","Scaptotrigona suboscuripennis cf","Scaura sp.1","Sphecidae sp.1","Temnosoma sp.1 ","Temnosoma sp.2","Tetragona perangulata cf","Tetragonisca angustula","Trigona fulviventris ","Trigona sp.1","Trigonisca sp.1 ","Xylocopa sp. 1"), hang = 0.3,      main = "Entidades Funcionales", sub = NULL,xlab = NULL, ylab = "Distancia", lty=1, lwd= 2, pty= "m")
 
 ### Distancias por ZA
 
